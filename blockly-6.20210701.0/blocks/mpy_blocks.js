@@ -59,7 +59,7 @@ Blockly.Blocks['pinout8266'] = {
             ["D7 / GPIO13", "13"],
             ["D8 / GPIO15", "15"],
             ["RX / GPIO03", "3"],
-            ["TX / GPIO01", "1"],
+            ["TX / GPIO01", "1"]
             ]), 'PIN');
     this.setOutput(true, null);
     this.setColour("#00979d");
@@ -99,7 +99,7 @@ Blockly.Blocks['pinout'] = {
             ["34 / ADC / GPIO34", "34"],
             ["35 / ADC / GPIO35", "35"],
             ["VP / ADC / GPIO36", "36"],
-            ["VN / ADC / GPIO39", "39"],
+            ["VN / ADC / GPIO39", "39"]
             ]), 'PIN');
     this.setOutput(true, null);
     this.setColour("#00979d");
@@ -129,11 +129,59 @@ Blockly.Blocks['pinout_ESP32C3'] = {
             ["18 / GPIO18", "18"],
             ["19 / GPIO19", "19"],
             ["20 / U0RXD / GPIO20", "20"],
-            ["21 / U0TXD / GPIO21", "21"],
+            ["21 / U0TXD / GPIO21", "21"]
             ]), 'PIN');
     this.setOutput(true, null);
     this.setColour("#00979d");
     this.setHelpUrl("https://docs.micropython.org/en/latest/esp32/quickref.html#pins-and-gpio");
+  },
+};
+
+
+
+/// Pinout ESP32S3
+Blockly.Blocks['pinout_ESP32S3'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('pin')
+        .appendField(new Blockly.FieldDropdown([
+            ["01 / GPIO01", "1"],
+            ["02 / GPIO02", "2"],
+            ["03 / GPIO03", "3"],
+            ["04 / GPIO04", "4"],
+            ["05 / GPIO05", "5"],
+            ["06 / GPIO06", "6"],
+            ["07 / GPIO07", "7"],
+            ["08 / GPIO08", "8"],
+            ["09 / GPIO09", "9"],
+            ["10 / GPIO10", "10"],
+            ["11 / GPIO11", "11"],
+            ["12 / GPIO12", "12"],
+            ["13 / GPIO13", "13"],
+            ["14 / GPIO14", "14"],
+            ["15 / GPIO15", "15"],
+            ["16 / GPIO16", "16"],
+            ["17 / GPIO17", "17"],
+            ["18 / GPIO18", "18"],
+            ["21 / GPIO21", "21"],
+            ["33 / GPIO33", "33"],
+            ["34 / GPIO34", "34"],
+            ["35 / GPIO35", "35"],
+            ["36 / GPIO36", "36"],
+            ["37 / GPIO37", "37"],
+            ["38 / GPIO38", "38"],
+            ["39 / GPIO39", "39"],
+            ["40 / GPIO40", "40"],
+            ["41 / GPIO41", "41"],
+            ["42 / GPIO42", "42"],
+            ["43 / GPIO43", "43"],
+            ["44 / GPIO44", "44"],
+            ["47 / GPIO47", "47"],
+            ["48 / GPIO48", "48"]
+            ]), 'PIN');
+    this.setOutput(true, null);
+    this.setColour("#00979d");
+    this.setHelpUrl("https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/gpio.html");
   },
 };
 
@@ -149,7 +197,7 @@ Blockly.Blocks['adc_pinout'] = {
             ["34 / ADC / GPIO34", "34"],
             ["35 / ADC / GPIO35", "35"],
             ["VP / ADC / GPIO36", "36"],
-            ["VN / ADC / GPIO39", "39"],
+            ["VN / ADC / GPIO39", "39"]
             ]), 'PIN');
     this.setOutput(true, null);
     this.setColour("#00979d");
@@ -168,11 +216,35 @@ Blockly.Blocks['adc_ESP32C3_pinout'] = {
             ["01 / ADC1_CH4 / GPIO01", "1"],
             ["02 / ADC1_CH2 / GPIO02", "2"],
             ["03 / ADC1_CH3 / GPIO03", "3"],
-            ["04 / ADC1_CH4 / GPIO04", "4"],
+            ["04 / ADC1_CH4 / GPIO04", "4"]
             ]), 'PIN');
     this.setOutput(true, null);
     this.setColour("#00979d");
     this.setHelpUrl("https://docs.micropython.org/en/latest/esp8266/quickref.html#pins-and-gpio");
+  },
+};
+
+
+/// ADC Pinout
+Blockly.Blocks['adc_ESP32S3_pinout'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField('pin')
+        .appendField(new Blockly.FieldDropdown([
+            ["01 / ADC1_CH0 / GPIO01", "1"],
+            ["02 / ADC1_CH1 / GPIO02", "2"],
+            ["03 / ADC1_CH2 / GPIO03", "3"],
+            ["04 / ADC1_CH3 / GPIO04", "4"],
+            ["05 / ADC1_CH4 / GPIO05", "5"],
+            ["06 / ADC1_CH5 / GPIO06", "6"],
+            ["07 / ADC1_CH6 / GPIO07", "7"],
+            ["08 / ADC1_CH7 / GPIO08", "8"],
+            ["09 / ADC1_CH8 / GPIO09", "9"],
+            ["10 / ADC1_CH9 / GPIO10", "10"]
+            ]), 'PIN');
+    this.setOutput(true, null);
+    this.setColour("#00979d");
+    this.setHelpUrl("https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/adc_oneshot.html");
   },
 };
 
@@ -248,7 +320,7 @@ Blockly.Blocks['pwm.freq'] = {
     this.appendValueInput('frequency')
         .setCheck('Number')
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("analogový výstup:")
+        .appendField("analogový výstup PWM:")
         .appendField(new Blockly.FieldNumber(0, 0, 50, 1), "ID")
         .appendField("frekvence");
     this.setPreviousStatement(true, null);
@@ -266,7 +338,7 @@ Blockly.Blocks['pwm.duty'] = {
     this.appendValueInput('duty')
         .setCheck('Number')
         .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField("analogový výstup:")
+        .appendField("analogový výstup PWM:")
         .appendField(new Blockly.FieldNumber(0, 0, 50, 1), "ID")
         .appendField("výstupní hodnota [0-1023]");
     this.setPreviousStatement(true, null);
@@ -282,7 +354,7 @@ Blockly.Blocks['pwm.duty'] = {
 Blockly.Blocks['pwm.deinit'] = {
   init: function() {
     this.appendDummyInput('')
-        .appendField("zastavit analogový výstup:")
+        .appendField("zastavit analogový výstup PWM:")
         .appendField(new Blockly.FieldNumber(0, 0, 50, 1), "ID");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -307,7 +379,7 @@ Blockly.Blocks['gpio_init_get'] = {
     this.appendDummyInput()
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField("jako")
-        .appendField(new Blockly.FieldDropdown([["bez pull odporu","None"], ["pull-up","PULL_UP"], ["pull-down","PULL_DOWN"]]), "in_pin");
+        .appendField(new Blockly.FieldDropdown([["bez pull odporu","None"], ["pull-up","Pin.PULL_UP"], ["pull-down","Pin.PULL_DOWN"]]), "in_pin");
     this.setInputsInline(false);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -385,6 +457,36 @@ Blockly.Blocks['esp32C3_adc'] = {
 
 
 
+
+
+Blockly.Blocks['esp32S3_adc'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("hodnota analogového vstupu");
+    this.appendDummyInput()
+        .appendField("měřený rozsah: ")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(new Blockly.FieldDropdown([["0 - 1V","0"], ["0 - 1.34V","1"], ["0 - 2V","2"], ["0 - 3.6V","3"]]), "Attenuation");
+    this.appendDummyInput()
+        .appendField("výstupní hodnota: ")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(new Blockly.FieldDropdown([["0 - 100","41"],["0 - 511","8"], ["0 - 1023","4"], ["0 - 2047","2"], ["0 - 4095","1"]]), "Width: ");
+    this.appendValueInput("pin")
+        .setCheck("Number")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Pin");
+    this.setOutput(true, null);
+    this.setColour("#00979d");
+ this.setTooltip("Přečte hodnotu na analogovém vstupu 1 - 10.");
+ this.setHelpUrl("https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/api-reference/peripherals/adc_oneshot.html");
+  }
+};
+
+
+
+
+
+
 Blockly.Blocks['touch_pin_sens'] = {
   init: function() {
     this.appendDummyInput()
@@ -404,6 +506,43 @@ Blockly.Blocks['touch_pin_sens'] = {
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField("citlivost :")
         .appendField(new Blockly.FieldDropdown([["střední","300"], ["nízká","150"], ["vysoká","450"]]), "citlivost");
+    this.setInputsInline(false);
+    this.setOutput(true, "Boolean");
+    this.setColour("#00979d");
+ this.setTooltip("Piny na kterých jde snímat dotyk");
+ this.setHelpUrl("https://docs.micropython.org/en/latest/esp32/quickref.html?highlight=touch#capacitive-touch");
+  }
+};
+
+
+
+
+
+
+Blockly.Blocks['esp32S3_touch_pin_sens'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("dotyk na pinu :")
+        .appendField(new Blockly.FieldDropdown([
+        ["01 / GPIO01", "1"],
+        ["02 / GPIO02", "2"],
+        ["03 / GPIO03", "3"],
+        ["04 / GPIO04", "4"],
+        ["05 / GPIO05", "5"],
+        ["06 / GPIO06", "6"],
+        ["07 / GPIO07", "7"],
+        ["08 / GPIO08", "8"],
+        ["09 / GPIO09", "9"],
+        ["10 / GPIO10", "10"],
+        ["11 / GPIO11", "11"],
+        ["12 / GPIO12", "12"],
+        ["13 / GPIO13", "13"],
+        ["14 / GPIO14", "14"]
+        ]), "pin");
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("citlivost :")
+        .appendField(new Blockly.FieldDropdown([["střední","40000"],["nejnižší","140000"], ["nízká","90000"], ["vysoká","28000"]]), "citlivost");
     this.setInputsInline(false);
     this.setOutput(true, "Boolean");
     this.setColour("#00979d");
@@ -630,7 +769,7 @@ Blockly.Blocks['loop_forever'] = {
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour("#f1cd18");
- this.setTooltip("Smyčka který se opakuje stále dokola");
+ this.setTooltip("Smyčka která se opakuje stále dokola");
  this.setHelpUrl("");
   }
 };
@@ -848,6 +987,10 @@ Blockly.Blocks['neopixel_5x5'] = {
     this.appendDummyInput()
         .appendField("Neopixel 5x5");
     this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_CENTRE)
+        .appendField(new Blockly.FieldCheckbox("FALSE"), "reverse")
+        .appendField("zrcadlově překlopit");
+    this.appendDummyInput()
         .appendField(new Blockly.FieldColour("#000000"), "pix24")
         .appendField(new Blockly.FieldColour("#000000"), "pix15")
         .appendField(new Blockly.FieldColour("#000000"), "pix14")
@@ -889,6 +1032,10 @@ Blockly.Blocks['get_pos_5x5'] = {
   init: function() {
     this.appendDummyInput()
         .appendField("číslo neopixelu na 5x5 matici");
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(new Blockly.FieldCheckbox("FALSE"), "reverse")
+        .appendField("zrcadlově překlopit");
     this.appendValueInput("posX")
         .setCheck(null)
         .setAlign(Blockly.ALIGN_RIGHT)
@@ -1413,6 +1560,11 @@ Blockly.Blocks['servo_init'] = {
         .appendField("inicializovat RC servo")
         .appendField(new Blockly.FieldDropdown([["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"], ["8","8"]]), "ID")
         .appendField("na pinu");
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(new Blockly.FieldCheckbox("FALSE"), "reverse")
+        .appendField("obrátit směr otáčení");
+    this.setInputsInline(false);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setColour("#a6be39");
@@ -1445,10 +1597,6 @@ Blockly.Blocks['set_servo_speed'] = {
         .appendField("nastavit RC servo")
         .appendField(new Blockly.FieldDropdown([["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"], ["8","8"]]), "ID")
         .appendField("na rychlost [-100 až 100]");
-    this.appendDummyInput()
-        .setAlign(Blockly.ALIGN_RIGHT)
-        .appendField(new Blockly.FieldCheckbox("TRUE"), "reverse")
-        .appendField("obrátit směr otáčení");
     this.setInputsInline(false);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
@@ -1814,11 +1962,122 @@ Blockly.Blocks['uart_init'] = {
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendField("stop bit")
         .appendField(new Blockly.FieldDropdown([["1","1"], ["2","2"]]), "stop_bit");
-    this.setColour(230);
+	this.appendValueInput("rx_pin")
+        .setCheck("Number")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Pin RX:");
+    this.appendValueInput("tx_pin")
+        .setCheck("Number")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Pin TX:");
+    this.setInputsInline(false);
+    this.setColour("#24c48e");
+	this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
  this.setTooltip("");
  this.setHelpUrl("");
   }
 };
+
+
+Blockly.Blocks['uart_read_num'] = {
+  init: function() {
+    this.appendValueInput("num")
+        .setCheck(null)
+        .appendField("UART přečíst zadaný počet znaků");
+    this.setOutput(true, null);
+    this.setColour("#24c48e");
+ this.setTooltip("Přečte zadaný počet znaků z UARTu a vrátí je jako bajtový objekt.");
+ this.setHelpUrl("https://docs.micropython.org/en/latest/library/machine.UART.html#machine-uart");
+  }
+};
+
+
+ Blockly.Blocks['uart_read_all'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("UART přečíst všechna dostupná data");
+    this.setOutput(true, null);
+    this.setColour("#24c48e");
+ this.setTooltip("Přečte všechna dostupná data z UARTu.");
+ this.setHelpUrl("https://docs.micropython.org/en/latest/library/machine.UART.html#machine-uart");
+  }
+};
+
+
+Blockly.Blocks['uart_detect_message'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("UART načíst zprávu s definovaným začátkem a koncem");
+    this.appendValueInput("start_char")
+        .setCheck("String")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Sekvence znaků nebo znak pro detekci začátku :");
+    this.appendValueInput("end_char")
+        .setCheck("String")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Sekvence znaků nebo znak pro detekci konce :");
+    this.appendValueInput("timeout")
+        .setCheck("Number")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Timeout [ms] :");
+    this.setOutput(true, null);
+    this.setColour("#24c48e");
+ this.setTooltip("Funkce který čeká než přijde na UART zpráva v definovaném formátu. Vrací None, když zpráva nedorazí v časovém limitu.");
+ this.setHelpUrl("");
+  }
+};
+
+
+
+Blockly.Blocks['uart_read_line'] = {
+  init: function() {
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_CENTRE)
+        .appendField("UART načíst řádek");
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("konec řádku :")
+        .appendField(new Blockly.FieldDropdown([["Windows - CR+LF","\"\\r\\n\""], ["Linux - LF","\"\\n\""], ["Mac OS - CR","\"\\r\""]]), "ending");
+    this.appendValueInput("timeout")
+        .setCheck("Number")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Timeout [ms] :");
+    this.setOutput(true, null);
+    this.setColour("#24c48e");
+ this.setTooltip("Funkce který čeká než přijde na UART symbol nového řádku, pokud se to nestihne v časovém limitu, vrací hodnotu None");
+ this.setHelpUrl("");
+  }
+};
+
+ 
+ Blockly.Blocks['uart_read_to_buf'] = {
+  init: function() {
+    this.appendValueInput("buffer")
+        .setCheck(null)
+        .appendField("UART přečíst data a uložit je do bufferu");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#24c48e");
+ this.setTooltip("Přečte data z UARTu do bufferu.");
+ this.setHelpUrl("https://docs.micropython.org/en/latest/library/machine.UART.html#machine-uart");
+  }
+};
+ 
+ Blockly.Blocks['uart_write'] = {
+  init: function() {
+    this.appendValueInput("buffer")
+        .setCheck(null)
+        .appendField("UART zapsat data :");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#24c48e");
+ this.setTooltip("Pošle řetězec na UART.");
+ this.setHelpUrl("https://docs.micropython.org/en/latest/library/machine.UART.html#machine-uart");
+  }
+};
+
+
 
 
 
@@ -2194,7 +2453,7 @@ Blockly.Blocks['vl53l0x_dist_mm'] = {
     this.setInputsInline(false);
     this.setOutput(true, null);
     this.setColour("#1CBCFF");
- this.setTooltip("Vzdálenost od laserový dálkoměr VL53L0X připojení na sběrnici I2C");
+ this.setTooltip("Vzdálenost od laserového dálkoměru VL53L0X připojeného na sběrnici I2C");
  this.setHelpUrl("");
   }
 };
@@ -2211,8 +2470,259 @@ Blockly.Blocks['vl53l0x_dist_cm'] = {
     this.setInputsInline(false);
     this.setOutput(true, null);
     this.setColour("#1CBCFF");
- this.setTooltip("Vzdálenost od laserový dálkoměr VL53L0X připojení na sběrnici I2C");
+ this.setTooltip("Vzdálenost od laserového dálkoměru VL53L0X připojeného na sběrnici I2C");
  this.setHelpUrl("");
   }
 };
 
+
+
+
+// PCF8574
+
+Blockly.Blocks['init_pcf8574'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("inicializace expandéru portů PCF8574");
+    this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("Adresa PCF8574 :")
+        .appendField(new Blockly.FieldDropdown([["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"]]), "adress");
+    this.appendValueInput("pin_SDA")
+        .setCheck("Number")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("SDA");
+    this.appendValueInput("pin_SCL")
+        .setCheck("Number")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("SCL");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#00979d");
+ this.setTooltip("Blok pro inicializaci expandéru portů s řadičem inicializace expandéru portů PCF8574 na sběrnici I2C");
+ this.setHelpUrl("https://github.com/mcauser/micropython-pcf8574");
+  }
+};
+
+
+Blockly.Blocks['get_pin_pcf8574'] = {
+  init: function() {
+    this.appendValueInput("PIN")
+        .setCheck(null)
+        .appendField("Adresa PCF8574 :")
+        .appendField(new Blockly.FieldDropdown([["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"]]), "adress")
+        .appendField(" získat stav digitálního pinu [0-7] :");
+    this.setOutput(true, null);
+    this.setColour("#00979d");
+ this.setTooltip("Získat logický stav digitálního pinu na expandéru PCF8574");
+ this.setHelpUrl("https://github.com/mcauser/micropython-pcf8574");
+  }
+};
+
+
+
+Blockly.Blocks['set_pin_pcf8574'] = {
+  init: function() {
+    this.appendValueInput("PIN")
+        .setCheck("Number")
+        .appendField("Adresa PCF8574 :")
+        .appendField(new Blockly.FieldDropdown([["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"]]), "adress")
+        .appendField(" nastavit stav digitálního pinu [0-7] :");
+    this.appendValueInput("Value")
+        .setCheck(null)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("[Pravda - Nepravda] nebo [1 a 0]    Stav :");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#00979d");
+ this.setTooltip("Získat logický stav digitálního pinu na expandéru PCF8574");
+ this.setHelpUrl("https://github.com/mcauser/micropython-pcf8574");
+  }
+};
+
+
+Blockly.Blocks['invert_pin_pcf8574'] = {
+  init: function() {
+    this.appendValueInput("PIN")
+        .setCheck("Number")
+        .appendField("Adresa PCF8574 :")
+        .appendField(new Blockly.FieldDropdown([["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"]]), "adress")
+        .appendField(" invertovat stav digitálního pinu [0-7] :");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#00979d");
+ this.setTooltip("Invertovat logický stav digitálního pinu na expandéru PCF8574");
+ this.setHelpUrl("https://github.com/mcauser/micropython-pcf8574");
+  }
+};
+
+
+Blockly.Blocks['set_port_pcf8574'] = {
+  init: function() {
+    this.appendValueInput("PORT")
+        .setCheck("Number")
+        .appendField("Adresa PCF8574 :")
+        .appendField(new Blockly.FieldDropdown([["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"]]), "adress")
+        .appendField(" nastavit hodnotu výstupního portu [0-255]:");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#00979d");
+ this.setTooltip("Nastavení celého 8bit portu na expandéru PCF8574");
+ this.setHelpUrl("https://github.com/mcauser/micropython-pcf8574");
+  }
+};
+
+
+Blockly.Blocks['get_port_pcf8574'] = {
+  init: function() {
+    this.appendDummyInput()
+        .appendField("Adresa PCF8574 :")
+        .appendField(new Blockly.FieldDropdown([["0","0"], ["1","1"], ["2","2"], ["3","3"], ["4","4"], ["5","5"], ["6","6"], ["7","7"]]), "adress")
+        .appendField(" získat hodnotu vstupního portu [0-255]");
+    this.setOutput(true, null);
+    this.setColour("#00979d");
+ this.setTooltip("Nastavení celého 8bit portu na expandéru PCF8574");
+ this.setHelpUrl("https://github.com/mcauser/micropython-pcf8574");
+  }
+};
+
+
+
+
+
+
+
+
+// Souborový systém
+
+Blockly.Blocks['file_write_auto'] = {
+  init: function() {
+    this.appendValueInput("FILENAME")
+        .setCheck("String")
+        .appendField("zapsat do souboru");
+    this.appendValueInput("DATA")
+        .setCheck("String")
+        .appendField("data");
+    this.appendDummyInput()
+        .appendField("v režimu")
+        .appendField(new Blockly.FieldDropdown([
+          ["zápis (w)","w"],
+          ["přidání (a)","a"],
+          ["zápis binárně (wb)","wb"]
+        ]), "MODE");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#a6745d");
+    this.setTooltip("Otevře soubor, zapíše data a automaticky ho zavře");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#file-io");
+  }
+};
+
+Blockly.Blocks['file_append_line_auto'] = {
+  init: function() {
+    this.appendValueInput("FILENAME")
+        .setCheck("String")
+        .appendField("přidat řádek do souboru");
+    this.appendValueInput("LINE")
+        .setCheck("String")
+        .appendField("řádek");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#a6745d");
+    this.setTooltip("Otevře soubor v režimu přidávání, přidá řádek a automaticky ho zavře");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#file-io");
+  }
+};
+
+Blockly.Blocks['file_delete_auto'] = {
+  init: function() {
+    this.appendValueInput("FILENAME")
+        .setCheck("String")
+        .appendField("smazat soubor");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#a6745d");
+    this.setTooltip("Smaže soubor z filesystemu");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#uos.remove");
+  }
+};
+
+Blockly.Blocks['make_directory_auto'] = {
+  init: function() {
+    this.appendValueInput("DIRNAME")
+        .setCheck("String")
+        .appendField("vytvořit adresář");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#a6745d");
+    this.setTooltip("Vytvoří adresář v souborovém systému");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#uos.mkdir");
+  }
+};
+
+Blockly.Blocks['list_directory_auto'] = {
+  init: function() {
+    this.appendValueInput("DIRNAME")
+        .setCheck("String")
+        .appendField("seznam souborů v adresáři");
+    this.setOutput(true, "Array");
+    this.setColour("#a6745d");
+    this.setTooltip("Vrátí seznam souborů a adresářů");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#uos.listdir");
+  }
+};
+
+Blockly.Blocks['rename_file_auto'] = {
+  init: function() {
+    this.appendValueInput("OLDNAME")
+        .setCheck("String")
+        .appendField("přejmenovat soubor");
+    this.appendValueInput("NEWNAME")
+        .setCheck("String")
+        .appendField("na");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setColour("#a6745d");
+    this.setTooltip("Přejmenuje soubor nebo adresář");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#uos.rename");
+  }
+};
+
+
+Blockly.Blocks['file_stat_custom'] = {
+  init: function() {
+    this.appendValueInput("FILENAME")
+        .setCheck("String")
+        .appendField("informace o souboru nebo adresáři");
+    this.appendDummyInput()
+        .appendField("akce")
+        .appendField(new Blockly.FieldDropdown([
+          ["existuje","exist"],
+          ["velikost","size"]
+        ]), "STAT_OPTION");
+    this.setOutput(true, null);
+    this.setColour("#a6745d");
+    this.setTooltip("Vrátí True/False, zda soubor existuje, nebo velikost souboru (v bytech, případně -1, pokud neexistuje)");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#uos.stat");
+  }
+};
+
+
+// === Blok pro čtení souboru (file_read_custom) ===
+Blockly.Blocks['file_read_custom'] = {
+  init: function() {
+    this.appendValueInput("FILENAME")
+        .setCheck("String")
+        .appendField("číst soubor");
+    this.appendDummyInput()
+        .appendField("v režimu")
+        .appendField(new Blockly.FieldDropdown([
+          ["čtení (r)","r"],
+          ["čtení binárně (rb)","rb"]
+        ]), "MODE");
+    this.setOutput(true, "String");
+    this.setColour("#a6745d");
+    this.setTooltip("Vrátí obsah souboru; při chybě vrací prázdný řetězec");
+    this.setHelpUrl("https://docs.micropython.org/en/latest/library/uos.html#file-io");
+  }
+};

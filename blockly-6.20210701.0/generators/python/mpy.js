@@ -69,6 +69,11 @@ Blockly.Python['pinout_ESP32C3'] = function(block) {
   return [pin, Blockly.Python.ORDER_NONE];
 };
 
+Blockly.Python['pinout_ESP32S3'] = function(block) {
+  var pin = block.getFieldValue('PIN');
+  return [pin, Blockly.Python.ORDER_NONE];
+};
+
 
 Blockly.Python['adc_pinout'] = function(block) {
   var pin = block.getFieldValue('PIN');
@@ -76,6 +81,11 @@ Blockly.Python['adc_pinout'] = function(block) {
 };
 
 Blockly.Python['adc_ESP32C3_pinout'] = function(block) {
+  var pin = block.getFieldValue('PIN');
+  return [pin, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['adc_ESP32S3_pinout'] = function(block) {
   var pin = block.getFieldValue('PIN');
   return [pin, Blockly.Python.ORDER_NONE];
 };
@@ -159,7 +169,7 @@ Blockly.Python['gpio_init_get'] = function(block) {
   Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
   var x = value_pin.replace('(','').replace(')','');
   var dropdown_in_pin = block.getFieldValue('in_pin');
-  Blockly.Python.definitions_[`gpio_get_${x}`] = 'Pin' + x + '=Pin(' + x + ', Pin.IN , Pin.' + dropdown_in_pin + ')\n\n';
+  Blockly.Python.definitions_[`gpio_get_${x}`] = 'Pin' + x + '=Pin(' + x + ', Pin.IN , ' + dropdown_in_pin + ')\n\n';
   var code = '';
   return code;
   };
@@ -236,7 +246,6 @@ Blockly.Python['esp32C3_adc'] = function(block) {
                   atten = 'ADC.ATTN_11DB';
 
 
-
   Blockly.Python.definitions_['init_adc' + x] = 'adc' + x + '=ADC(Pin(' + x + '))\nadc' + x + '.atten(' + atten + ')\n\n';
 
   var code = 'int(adc' + x + '.read()/' + dropdown_width__ + ')';
@@ -245,7 +254,64 @@ Blockly.Python['esp32C3_adc'] = function(block) {
 
 
 
+
+Blockly.Python['esp32S3_adc'] = function(block) {
+  Blockly.Python.definitions_['import_adc'] = 'from machine import ADC';
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  var value_pin = Blockly.Python.valueToCode(block, 'pin', Blockly.Python.ORDER_ATOMIC);
+  var x = value_pin.replace('(','').replace(')','');
+
+  var dropdown_attenuation = block.getFieldValue('Attenuation');
+  var dropdown_width__ = block.getFieldValue('Width: ');
+
+  var atten = 'ADC.ATTN_0DB';
+  if (dropdown_attenuation==0)
+                  atten = 'ADC.ATTN_0DB';
+  if (dropdown_attenuation==1)
+                  atten = 'ADC.ATTN_2_5DB';
+  if (dropdown_attenuation==2)
+                  atten = 'ADC.ATTN_6DB';
+  if (dropdown_attenuation==3)
+                  atten = 'ADC.ATTN_11DB';
+
+
+  Blockly.Python.definitions_['init_adc' + x] = 'adc' + x + '=ADC(Pin(' + x + '))\nadc' + x + '.atten(' + atten + ')\nadc' + x + '.width(ADC.WIDTH_12BIT)\n\n';
+
+  var code = 'int(adc' + x + '.read()/' + dropdown_width__ + ')';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+
+
+
+
+
+
 Blockly.Python['touch_pin_sens'] = function(block) {
+  var value_pin = block.getFieldValue('pin');
+  var dropdown_citlivost = block.getFieldValue('citlivost');
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['import_touchpad'] = `
+
+from machine import TouchPad
+
+def is_touched_pin(pin_id, treshold=300):
+    if pin_id.read() < treshold:
+        return True
+    else:
+        return False
+`;
+
+  Blockly.Python.definitions_['import_touchpad' + value_pin] = 'touch' + value_pin + ' = TouchPad(Pin(' + value_pin + '))\n';
+  var code = 'is_touched_pin(touch' + value_pin + ',' + dropdown_citlivost + ')';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+
+
+Blockly.Python['esp32S3_touch_pin_sens'] = function(block) {
   var value_pin = block.getFieldValue('pin');
   var dropdown_citlivost = block.getFieldValue('citlivost');
   Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
@@ -572,6 +638,8 @@ Blockly.Python['neopixel_write'] = function(block) {
 
 
 Blockly.Python['neopixel_5x5'] = function(block) {
+  var checkbox_reverse = block.getFieldValue('reverse') == 'TRUE';
+
   Blockly.Python.definitions_['import_utime'] = 'import utime';
   Blockly.Python.definitions_['set_neopixel'] = `
 def neopixel_write(neopixel_num,neopixel_set_col):
@@ -582,12 +650,23 @@ def neopixel_write(neopixel_num,neopixel_set_col):
      utime.sleep_ms(0)
      print('Chyba pri zapisu dat do neopixelu cislo ' + str(1) + ' platna adresa neopixelu je 0 az ' + str(max_neopixel - 1))
 `
-  
   var code = "";
+  var i = 0;
+  var reverse_ordered = [20,21,22,23,24,15,16,17,18,19,10,11,12,13,14,5,6,7,8,9,0,1,2,3,4];
   
-  for (let i = 0; i < 25; i++) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(block.getFieldValue('pix' + i));
-    code = code + 'neopixel_write(' + i + ',' +  "(" + parseInt(result[1], 16) + ", " + parseInt(result[2], 16) + ", " + parseInt(result[3], 16) + "))\n";
+  if (checkbox_reverse)
+  {
+    for (let i = 0; i < 25; i++) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(block.getFieldValue('pix' + reverse_ordered[i]));
+        code = code + 'neopixel_write(' + i + ',' +  "(" + parseInt(result[1], 16) + ", " + parseInt(result[2], 16) + ", " + parseInt(result[3], 16) + "))\n";
+      }
+  }
+  else
+  {
+      for (let i = 0; i < 25; i++) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(block.getFieldValue('pix' + i));
+        code = code + 'neopixel_write(' + i + ',' +  "(" + parseInt(result[1], 16) + ", " + parseInt(result[2], 16) + ", " + parseInt(result[3], 16) + "))\n";
+      }
   }
   return code;
 };
@@ -596,8 +675,11 @@ def neopixel_write(neopixel_num,neopixel_set_col):
 
 
 Blockly.Python['get_pos_5x5'] = function(block) {
+  var checkbox_reverse = block.getFieldValue('reverse') == 'TRUE';
+
   var value_posx = Blockly.Python.valueToCode(block, 'posX', Blockly.Python.ORDER_ATOMIC);
   var value_posy = Blockly.Python.valueToCode(block, 'posY', Blockly.Python.ORDER_ATOMIC);
+  
   
   Blockly.Python.definitions_['get_pos_5x5'] = `
 def get_pos_5x5(x,y):
@@ -610,7 +692,17 @@ def get_pos_5x5(x,y):
         return(neopix_map[int(y)][int(x)])
 `
 
-  var code = 'get_pos_5x5(' + value_posx + ',' + value_posy + ')';
+
+  if (checkbox_reverse)
+  {
+    var code = 'get_pos_5x5(4-' + value_posx + ',' + value_posy + ')';
+  }
+  else
+  {
+    var code = 'get_pos_5x5(' + value_posx + ',' + value_posy + ')';
+  }
+
+  
   return [code, Blockly.Python.ORDER_NONE];
 };
 
@@ -744,10 +836,21 @@ Blockly.Python['tcs34725_init'] = function(block) {
   
   var dropdown_rgb_id = block.getFieldValue('rgb_id');
   var value_exposure = Blockly.Python.valueToCode(block, 'exposure', Blockly.Python.ORDER_ATOMIC);
-  var value_scl = Blockly.Python.valueToCode(block, 'scl', Blockly.Python.ORDER_ATOMIC);
-  var value_sda = Blockly.Python.valueToCode(block, 'sda', Blockly.Python.ORDER_ATOMIC);
-  // TODO: Assemble Python into code variable.
-  var code = 'i2c_rgb' + dropdown_rgb_id + ' = SoftI2C(scl=Pin(' + value_scl + '), sda=Pin(' + value_sda + '), freq=100000)\nrgb_sensor' + dropdown_rgb_id + ' = tcs34725.TCS34725(i2c_rgb' + dropdown_rgb_id + ',' + value_exposure + ')\n';
+  var value_scl = Blockly.Python.valueToCode(block, 'scl', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
+  var value_sda = Blockly.Python.valueToCode(block, 'sda', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
+  
+  var code = `
+if not "i2c_{scl}_{sda}" in globals():
+    i2c_{scl}_{sda} = SoftI2C(scl=Pin({scl}), sda=Pin({sda}), freq=400000)
+
+rgb_sensor{id} = tcs34725.TCS34725(i2c_{scl}_{sda},{exposure})\n
+`
+
+  code = code.replace(/{scl}/g, value_scl);
+  code = code.replace(/{sda}/g, value_sda);
+  code = code.replace(/{id}/g, dropdown_rgb_id);
+  code = code.replace(/{exposure}/g, value_exposure);
+
   return code;
 };
 
@@ -936,12 +1039,21 @@ Blockly.Python['fb_txt_mini'] = function(block) {
 Blockly.Python['servo_init'] = function(block) {
   var dropdown_id = block.getFieldValue('ID');
   var value_pin = Blockly.Python.valueToCode(block, 'pin', Blockly.Python.ORDER_ATOMIC);
+  var checkbox_reverse = block.getFieldValue('reverse') == 'TRUE';
+  
   
   Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
   Blockly.Python.definitions_['import_servo'] = 'from servo import Servo';
   
-  Blockly.Python.definitions_['def_servo' + dropdown_id] = 'servo' + dropdown_id + ' = Servo(Pin(' + value_pin + '))\n';
-
+  if (checkbox_reverse)
+  {
+      Blockly.Python.definitions_['def_servo' + dropdown_id] = 'servo' + dropdown_id + ' = Servo(Pin(' + value_pin + '), reverse=True)\n';
+  }
+  else
+  {
+      Blockly.Python.definitions_['def_servo' + dropdown_id] = 'servo' + dropdown_id + ' = Servo(Pin(' + value_pin + '))\n';
+  }
+  
   var code = '';
   return code;
 };
@@ -964,22 +1076,15 @@ Blockly.Python['servo_angle'] = function(block) {
 Blockly.Python['set_servo_speed'] = function(block) {
   var dropdown_id = block.getFieldValue('ID');
   var value_speed = Blockly.Python.valueToCode(block, 'speed', Blockly.Python.ORDER_ATOMIC);
-  var checkbox_reverse = block.getFieldValue('reverse') == 'TRUE';
+  
   Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
   Blockly.Python.definitions_['import_servo'] = 'from servo import Servo';
   
   if (value_speed < -100){value_speed = -100;}
   if (value_speed > 100){value_speed = 100;}
   
-  if (checkbox_reverse)
-  {
-      var code = 'servo' + dropdown_id + '.write_speed(int(' + value_speed + ' * (-1)))\n';
-  }
-  else
-  {
-      var code = 'servo' + dropdown_id + '.write_speed(int(' + value_speed + '))\n';
-  }
-    
+  var code = 'servo' + dropdown_id + '.write_speed(int(' + value_speed + '))\n';
+
   return code;
 };
 
@@ -1434,17 +1539,173 @@ def esp_now_read_msg(etimeout = 1):
 
 
 
+
+
 // Uart
 
 Blockly.Python['uart_init'] = function(block) {
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['from_machine_import_UART'] = 'from machine import UART';   
+  
   var number_baud = block.getFieldValue('baud');
   var dropdown_bits = block.getFieldValue('bits');
   var dropdown_parity = block.getFieldValue('parity');
   var dropdown_stop_bit = block.getFieldValue('stop_bit');
-  // TODO: Assemble Python into code variable.
-  var code = '...\n';
+  var val_rx = Blockly.Python.valueToCode(block, 'rx_pin', Blockly.Python.ORDER_ATOMIC);
+  var val_tx = Blockly.Python.valueToCode(block, 'tx_pin', Blockly.Python.ORDER_ATOMIC);
+
+  var code = 'uart1 = UART(1, baudrate=' + number_baud + ', tx=' + val_tx + ', rx=' + val_rx + ',bits=' + dropdown_bits + ', parity=' + dropdown_parity + ', stop=' + dropdown_stop_bit + ')\n\n';
   return code;
 };
+
+Blockly.Python['uart_read_num'] = function(block) {
+  Blockly.Python.definitions_['FC_read_uart'] = `  
+def read_uart(uart, len=None):
+    if len:
+        data = uart.read(len)
+    else:
+        data = uart.read()
+
+    if data is None:
+        return None
+    try:
+        return data.decode('utf-8')
+    except UnicodeDecodeError:
+        return str(data)
+`
+  
+  var value_num = Blockly.Python.valueToCode(block, 'num', Blockly.Python.ORDER_ATOMIC);
+  var code = 'read_uart(uart1, ' + value_num + ')';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['uart_read_all'] = function(block) {
+  Blockly.Python.definitions_['FC_read_uart'] = `  
+def read_uart(uart, len=None):
+    if len:
+        data = uart.read(len)
+    else:
+        data = uart.read()
+
+    if data is None:
+        return None
+    try:
+        return data.decode('utf-8')
+    except UnicodeDecodeError:
+        return str(data)
+`
+  var code = 'read_uart(uart1)';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+Blockly.Python['uart_detect_message'] = function(block) {
+  Blockly.Python.definitions_['FC_wait_for_message'] = `
+
+# Globalni buffer pro uchovani dat mezi volanimi funkce
+rx_buffer = b''
+
+def wait_for_message(uart, start_marker, end_marker, timeout_ms):
+    global rx_buffer
+
+    # Prevod markeru na bajty, pokud nejsou jiz v bajtovem formatu
+    if isinstance(start_marker, str):
+        start_marker = start_marker.encode('utf-8')
+    if isinstance(end_marker, str):
+        end_marker = end_marker.encode('utf-8')
+    
+    start_time = utime.ticks_ms()
+    while utime.ticks_diff(utime.ticks_ms(), start_time) < timeout_ms:
+        data = uart.read()
+        if data:
+            rx_buffer += data
+            # Hledame pocatecni marker
+            start_index = rx_buffer.find(start_marker)
+            if start_index != -1:
+                # Hledame ukoncovaci marker za start_marker
+                end_index = rx_buffer.find(end_marker, start_index + len(start_marker))
+                if end_index != -1:
+                    # Extrahujeme pouze obsah mezi markery
+                    message = rx_buffer[start_index + len(start_marker): end_index]
+                    rx_buffer = b''  # Vyprazdnime buffer po uspesnem nacteni kompletni zpravy
+                    try:
+                        return message.decode('utf-8')
+                    except UnicodeDecodeError:
+                        return str(message)
+        utime.sleep_ms(10)
+    return None
+
+`
+
+  var value_start_char = Blockly.Python.valueToCode(block, 'start_char', Blockly.Python.ORDER_ATOMIC);
+  var value_end_char = Blockly.Python.valueToCode(block, 'end_char', Blockly.Python.ORDER_ATOMIC);
+  var value_timeout = Blockly.Python.valueToCode(block, 'timeout', Blockly.Python.ORDER_ATOMIC);
+  
+  var code = 'wait_for_message(uart1,' + value_start_char + ', ' + value_end_char + ', ' + value_timeout + ')';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+Blockly.Python['uart_read_line'] = function(block) {
+  Blockly.Python.definitions_['FC_wait_for_message'] = `
+  
+# Globalni buffer pro uchovani dat mezi volanimi funkce
+rx_buffer_line = b''
+
+
+def read_line(uart, line_ending='\\n', timeout_ms=1000):
+    global rx_buffer_line
+
+    # Prevedeme line_ending na bajty, pokud je to string
+    if isinstance(line_ending, str):
+        line_ending = line_ending.encode('utf-8')
+    
+    start_time = utime.ticks_ms()
+    while utime.ticks_diff(utime.ticks_ms(), start_time) < timeout_ms:
+        data = uart.read()
+        if data:
+            rx_buffer_line += data
+            # Hledame index ukoncovaci sekvence
+            newline_index = rx_buffer_line.find(line_ending)
+            if newline_index != -1:
+                # Extrahujeme radek bez ukoncovaci sekvence
+                line = rx_buffer_line[:newline_index]
+                # Odstranime z bufferu data az za ukoncovaci sekvenci
+                rx_buffer_line = rx_buffer_line[newline_index + len(line_ending):]
+                try:
+                    return line.decode('utf-8')
+                except UnicodeDecodeError:
+                    return str(line)
+        utime.sleep_ms(10)
+    return None
+
+` 
+  
+  var dropdown_ending = block.getFieldValue('ending');
+  var value_timeout = Blockly.Python.valueToCode(block, 'timeout', Blockly.Python.ORDER_ATOMIC);
+  
+  var code = 'read_line(uart1, ' + dropdown_ending + ', ' + value_timeout + ')';
+  
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+
+Blockly.Python['uart_read_to_buf'] = function(block) {
+  var value_buffer = Blockly.Python.valueToCode(block, 'buffer', Blockly.Python.ORDER_ATOMIC);
+  var code = 'uart1.readinto(' + value_buffer + ')\n';
+  return code;
+};
+
+Blockly.Python['uart_write'] = function(block) {
+  var value_buffer = Blockly.Python.valueToCode(block, 'buffer', Blockly.Python.ORDER_ATOMIC);
+  var code = 'uart1.write(' + value_buffer + ')\n';
+  return code;
+};
+
+
+
+
 
 
 
@@ -1484,10 +1745,20 @@ Blockly.Python['mpu6050_init'] = function(block) {
   Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
   Blockly.Python.definitions_['import_mpu6050'] = 'from mpu6050 import mpu6050';
   
-  var value_scl = Blockly.Python.valueToCode(block, 'SCL', Blockly.Python.ORDER_ATOMIC);
-  var value_sda = Blockly.Python.valueToCode(block, 'SDA', Blockly.Python.ORDER_ATOMIC);
+  var value_scl = Blockly.Python.valueToCode(block, 'SCL', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
+  var value_sda = Blockly.Python.valueToCode(block, 'SDA', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
 
-  var code = 'i2c_mpu6050 = SoftI2C(scl=Pin(' + value_scl + '), sda=Pin(' + value_sda + '), freq=400000)\nmpu = mpu6050(i2c_mpu6050)\nmpu.calcOffsets(1, 1)\n';
+  var code = `
+if not "i2c_{scl}_{sda}" in globals():
+    i2c_{scl}_{sda} = SoftI2C(scl=Pin({scl}), sda=Pin({sda}), freq=400000)
+
+mpu = mpu6050(i2c_{scl}_{sda})
+mpu.calcOffsets(1, 1)\n
+`
+
+  code = code.replace(/{scl}/g, value_scl);
+  code = code.replace(/{sda}/g, value_sda);
+
   return code;
 };
 
@@ -1677,15 +1948,18 @@ def http_get_request(url):
 
 Blockly.Python['vl53l0x_init'] = function(block) {
   var dropdown_id = block.getFieldValue('ID');
-  var value_sda = Blockly.Python.valueToCode(block, 'SDA', Blockly.Python.ORDER_ATOMIC);
-  var value_scl = Blockly.Python.valueToCode(block, 'SCL', Blockly.Python.ORDER_ATOMIC);
+  var value_sda = Blockly.Python.valueToCode(block, 'SDA', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
+  var value_scl = Blockly.Python.valueToCode(block, 'SCL', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
   
   Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
   Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
   Blockly.Python.definitions_['import_VL53L0X'] = 'from vl53l0x import VL53L0X';
 
   var laser_define = "# Create a VL53L0X object\ntry:\n"
-  laser_define = laser_define + "   tof" + dropdown_id + " = VL53L0X(SoftI2C(scl=Pin(" + value_scl + "), sda=Pin(" + value_sda + "), freq=400000))\n"
+  laser_define = laser_define + '   if not "i2c_' + value_scl + '_' + value_sda + '" in globals():\n';
+  laser_define = laser_define + '      i2c_' + value_scl + '_' + value_sda + ' = SoftI2C(scl=Pin(' + value_scl + '), sda=Pin(' + value_sda + '), freq=400000)\n\n';
+  
+  laser_define = laser_define + "   tof" + dropdown_id + " = VL53L0X(i2c_" + value_scl + "_" + value_sda + ")\n"
   laser_define = laser_define + "   tof" + dropdown_id + ".set_measurement_timing_budget(50000)\n"
   laser_define = laser_define + "   tof" + dropdown_id + ".set_Vcsel_pulse_period(tof" + dropdown_id + ".vcsel_period_type[0], 16)\n"
   laser_define = laser_define + "   tof" + dropdown_id + ".set_Vcsel_pulse_period(tof" + dropdown_id + ".vcsel_period_type[1], 12)\n"
@@ -1729,4 +2003,180 @@ Blockly.Python['vl53l0x_dist_cm'] = function(block) {
 
 
 
+// PCF8574
 
+Blockly.Python['init_pcf8574'] = function(block) {
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
+  Blockly.Python.definitions_['import_pcf8574'] = 'import pcf8574';
+
+  var dropdown_adress = block.getFieldValue('adress');
+  var value_pin_sda = Blockly.Python.valueToCode(block, 'pin_SDA', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
+  var value_pin_scl = Blockly.Python.valueToCode(block, 'pin_SCL', Blockly.Python.ORDER_ATOMIC).replace(/[()]/g, '');
+  
+  var code = `
+if not "i2c_{scl}_{sda}" in globals():
+    i2c_{scl}_{sda} = SoftI2C(scl=Pin({scl}), sda=Pin({sda}), freq=100000)
+
+pcf8574_{dev_adr} = pcf8574.PCF8574(i2c_{scl}_{sda}, 0x20 + {dev_adr})\n
+`
+
+  code = code.replace(/{scl}/g, value_pin_scl);
+  code = code.replace(/{sda}/g, value_pin_sda);
+  code = code.replace(/{dev_adr}/g, dropdown_adress);
+  
+  return code;
+};
+
+
+
+Blockly.Python['get_pin_pcf8574'] = function(block) {
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
+  Blockly.Python.definitions_['import_pcf8574'] = 'import pcf8574';
+  
+  var dropdown_adress = block.getFieldValue('adress');
+  var value_pin = Blockly.Python.valueToCode(block, 'PIN', Blockly.Python.ORDER_ATOMIC);
+  var code = 'pcf8574_' + dropdown_adress + '.pin(' + value_pin + ')';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+Blockly.Python['set_pin_pcf8574'] = function(block) {
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
+  Blockly.Python.definitions_['import_pcf8574'] = 'import pcf8574';
+  
+  var dropdown_adress = block.getFieldValue('adress');
+  var value_pin = Blockly.Python.valueToCode(block, 'PIN', Blockly.Python.ORDER_ATOMIC);
+  var value_value = Blockly.Python.valueToCode(block, 'Value', Blockly.Python.ORDER_ATOMIC);
+  
+  var code = 'pcf8574_' + dropdown_adress + '.pin(' + value_pin + ', ' + value_value + ')\n';
+  return code;
+};
+
+
+Blockly.Python['invert_pin_pcf8574'] = function(block) {
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
+  Blockly.Python.definitions_['import_pcf8574'] = 'import pcf8574';
+  
+  var dropdown_adress = block.getFieldValue('adress');
+  var value_pin = Blockly.Python.valueToCode(block, 'PIN', Blockly.Python.ORDER_ATOMIC);
+  
+  var code = 'pcf8574_' + dropdown_adress + '.toggle(' + value_pin + ')\n';
+  return code;
+};
+
+
+Blockly.Python['set_port_pcf8574'] = function(block) {
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
+  Blockly.Python.definitions_['import_pcf8574'] = 'import pcf8574';
+  
+  var dropdown_adress = block.getFieldValue('adress');
+  var value_port = Blockly.Python.valueToCode(block, 'PORT', Blockly.Python.ORDER_ATOMIC);
+  
+  var code = 'pcf8574_' + dropdown_adress + '.port = ' + value_port + '\n';
+  
+  return code;
+};
+
+Blockly.Python['get_port_pcf8574'] = function(block) {
+  Blockly.Python.definitions_['import_pin'] = 'from machine import Pin';
+  Blockly.Python.definitions_['import_SoftI2C'] = 'from machine import SoftI2C';
+  Blockly.Python.definitions_['import_pcf8574'] = 'import pcf8574';
+  
+  var dropdown_adress = block.getFieldValue('adress');
+  
+  var code = 'pcf8574_' + dropdown_adress + '.port';
+  
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+
+
+
+
+// Souborový systém
+
+Blockly.Python['file_write_auto'] = function(block) {
+  var filename = Blockly.Python.valueToCode(block, 'FILENAME', Blockly.Python.ORDER_ATOMIC);
+  var data = Blockly.Python.valueToCode(block, 'DATA', Blockly.Python.ORDER_ATOMIC);
+  var mode = block.getFieldValue('MODE');
+  var code = 'with open(' + filename + ', "' + mode + '") as f:\n    f.write(' + data + ')\n';
+  return code;
+};
+
+Blockly.Python['file_append_line_auto'] = function(block) {
+  var filename = Blockly.Python.valueToCode(block, 'FILENAME', Blockly.Python.ORDER_ATOMIC);
+  var line = Blockly.Python.valueToCode(block, 'LINE', Blockly.Python.ORDER_ATOMIC);
+  var code = 'with open(' + filename + ', "a") as f:\n    f.write(' + line + ' + "\\n")\n';
+  return code;
+};
+
+Blockly.Python['file_delete_auto'] = function(block) {
+  var filename = Blockly.Python.valueToCode(block, 'FILENAME', Blockly.Python.ORDER_ATOMIC);
+  Blockly.Python.definitions_['import_uos'] = 'import uos';
+  var code = 'uos.remove(' + filename + ')\n';
+  return code;
+};
+
+Blockly.Python['make_directory_auto'] = function(block) {
+  var dirname = Blockly.Python.valueToCode(block, 'DIRNAME', Blockly.Python.ORDER_ATOMIC);
+  Blockly.Python.definitions_['import_uos'] = 'import uos';
+  var code = 'uos.mkdir(' + dirname + ')\n';
+  return code;
+};
+
+Blockly.Python['list_directory_auto'] = function(block) {
+  var dirname = Blockly.Python.valueToCode(block, 'DIRNAME', Blockly.Python.ORDER_ATOMIC);
+  Blockly.Python.definitions_['import_uos'] = 'import uos';
+  var code = 'uos.listdir(' + dirname + ')';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['rename_file_auto'] = function(block) {
+  var oldname = Blockly.Python.valueToCode(block, 'OLDNAME', Blockly.Python.ORDER_ATOMIC);
+  var newname = Blockly.Python.valueToCode(block, 'NEWNAME', Blockly.Python.ORDER_ATOMIC);
+  Blockly.Python.definitions_['import_uos'] = 'import uos';
+  var code = 'uos.rename(' + oldname + ', ' + newname + ')\n';
+  return code;
+};
+
+
+
+Blockly.Python['file_stat_custom'] = function(block) {
+  var filename = Blockly.Python.valueToCode(block, 'FILENAME', Blockly.Python.ORDER_ATOMIC);
+  var option = block.getFieldValue('STAT_OPTION');
+  Blockly.Python.definitions_['def_get_file_stat'] =
+`def get_file_stat(filename, option):
+    import uos
+    try:
+        st = uos.stat(filename)
+        if option == "exist":
+            return True
+        elif option == "size":
+            return st[6]
+    except OSError:
+        if option == "exist":
+            return False
+        elif option == "size":
+            return -1`;
+  var code = 'get_file_stat(' + filename + ', "' + option + '")';
+  return [code, Blockly.Python.ORDER_NONE];
+};
+
+Blockly.Python['file_read_custom'] = function(block) {
+  var filename = Blockly.Python.valueToCode(block, 'FILENAME', Blockly.Python.ORDER_ATOMIC);
+  var mode = block.getFieldValue('MODE');
+  Blockly.Python.definitions_['def_read_file'] =
+`def read_file(filename, mode):
+    try:
+        with open(filename, mode) as f:
+            return f.read()
+    except OSError:
+        return ""`;
+  var code = 'read_file(' + filename + ', "' + mode + '")';
+  return [code, Blockly.Python.ORDER_NONE];
+};
